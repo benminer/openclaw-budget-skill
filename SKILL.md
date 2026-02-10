@@ -13,7 +13,7 @@ Connect to bank accounts via SimpleFIN Bridge, fetch transactions, categorize sp
 
 1. **Setup**: Initialize data directory
    ```bash
-   node scripts/setup.js
+   budget-skill setup
    ```
 
 2. **Sign up for SimpleFIN**:
@@ -31,17 +31,17 @@ Connect to bank accounts via SimpleFIN Bridge, fetch transactions, categorize sp
 
 4. **Fetch Accounts**:
    ```bash
-   node scripts/fetch_accounts.js
+   budget-skill accounts
    ```
 
 5. **Fetch Transactions**:
    ```bash
-   node scripts/fetch_transactions.js --days=30
+   budget-skill fetch --days 30
    ```
 
 6. **View Report**:
    ```bash
-   node scripts/report.js --period=monthly
+   budget-skill report --period monthly
    ```
 
 ## Core Workflows
@@ -58,9 +58,9 @@ SimpleFIN handles all bank connections through their web interface:
 
 **Fetch transactions**:
 ```bash
-node scripts/fetch_transactions.js --days=30
+budget-skill fetch --days 30
 ```
-- Fetches last 30 days (or specify --days=90 for 90 days)
+- Fetches last 30 days (or specify --days 90)
 - Auto-categorizes using keyword matching
 - Saves to `data/simplefin/transactions/transactions.json`
 
@@ -68,12 +68,12 @@ node scripts/fetch_transactions.js --days=30
 
 **Set a budget**:
 ```bash
-node scripts/set_budget.js --category=FOOD_AND_DRINK --limit=500 --period=monthly
+budget-skill budget set --category FOOD_AND_DRINK --limit 500 --period monthly
 ```
 
 **Check budget status**:
 ```bash
-node scripts/budget_status.js --period=monthly
+budget-skill budget status --period monthly
 ```
 - Shows spending vs budget for current period
 - Highlights categories over budget
@@ -81,7 +81,7 @@ node scripts/budget_status.js --period=monthly
 ### Spending Reports
 
 ```bash
-node scripts/report.js --period=monthly
+budget-skill report --period monthly
 ```
 - Total spending by category
 - Top 10 merchants
@@ -130,12 +130,24 @@ Custom rules can be added to categorization logic in `fetch_transactions.js`
 - No review process
 - Cancel anytime
 
-## Scripts
+## CLI Commands
 
-- `setup.js` - Initialize data directories
-- `fetch_accounts.js` - Fetch connected bank accounts
-- `fetch_transactions.js` - Fetch and categorize transactions
-- `set_budget.js` - Set budget limits
-- `budget_status.js` - Check spending vs budgets
-- `report.js` - Generate spending reports
-- `utils.js` - Shared utilities (SimpleFIN HTTP client, file I/O, error handling)
+Single executable binary (compiled with Bun):
+
+```bash
+budget-skill <command> [options]
+
+Commands:
+  setup                 Initialize data directories
+  accounts              Fetch connected bank accounts
+  fetch                 Fetch and categorize transactions
+  budget set            Set budget limits
+  budget status         Check spending vs budgets
+  report                Generate spending reports
+  
+Options:
+  --help                Show help
+  --version             Show version
+```
+
+Install globally: `sudo mv budget-skill /usr/local/bin/budget-skill`

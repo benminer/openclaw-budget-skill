@@ -1,18 +1,18 @@
 {
   "name": "budget-skill",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "OpenClaw skill for SimpleFIN API integration - transaction tracking, budgeting, and spending reports",
-  "main": "scripts/utils.js",
-  "scripts": {
-    "setup": "node scripts/setup.js",
-    "accounts": "node scripts/fetch_accounts.js",
-    "fetch": "node scripts/fetch_transactions.js",
-    "budget": "node scripts/set_budget.js",
-    "status": "node scripts/budget_status.js",
-    "report": "node scripts/report.js"
+  "main": "cli.js",
+  "bin": {
+    "budget-skill": "./cli.js"
   },
-  "keywords": ["simplefin", "banking", "budget", "transactions", "openclaw"],
+  "scripts": {
+    "build": "bun build ./cli.js --compile --outfile budget-skill"
+  },
+  "keywords": ["simplefin", "banking", "budget", "transactions", "openclaw", "bun"],
   "author": "Ben Miner",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "yargs": "^17.7.2"
+  }
 }

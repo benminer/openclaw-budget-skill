@@ -25,20 +25,23 @@ OpenClaw skill for connecting bank accounts via SimpleFIN Bridge, tracking trans
 ## Quick Start
 
 ```bash
+# Setup
+budget-skill setup
+
 # Fetch connected accounts
-node scripts/fetch_accounts.js
+budget-skill accounts
 
 # Fetch transactions (last 30 days)
-node scripts/fetch_transactions.js --days=30
+budget-skill fetch --days 30
 
 # Set a monthly budget
-node scripts/set_budget.js --category=FOOD_AND_DRINK --limit=500 --period=monthly
+budget-skill budget set --category FOOD_AND_DRINK --limit 500 --period monthly
 
 # Check budget status
-node scripts/budget_status.js
+budget-skill budget status
 
 # Generate spending report
-node scripts/report.js --period=monthly
+budget-skill report --period monthly
 ```
 
 ## Get SimpleFIN Access
