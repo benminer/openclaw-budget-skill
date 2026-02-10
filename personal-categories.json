@@ -1,0 +1,55 @@
+{
+  "merchant_rules": {
+    "USAA FSB": {
+      "category": "AUTO_LOAN",
+      "notes": "Monthly car loan payment - $501.68",
+      "frequency": "monthly",
+      "track_balance": true,
+      "current_balance": 3348.73,
+      "last_updated": "2026-02-10"
+    },
+    "ANOMALY": {
+      "category": "SUBSCRIPTIONS",
+      "notes": "OpenCode Zed - AI model service",
+      "merchant_name": "OpenCode Zed"
+    },
+    "CAPITAL ONE AUTOPAY": {
+      "category": "CREDIT_CARD_PAYMENT",
+      "notes": "Credit card autopay"
+    },
+    "CAPITAL ONE": {
+      "category": "CREDIT_CARD_PAYMENT",
+      "notes": "Credit card payment"
+    },
+    "Acorns": {
+      "category": "SAVINGS",
+      "notes": "Investment/savings contributions"
+    },
+    "Venmo": {
+      "category": "PERSONAL_SERVICES",
+      "notes": "P2P payments - often personal trainer (every 2 weeks, $75)"
+    },
+    "PAYPAL": {
+      "category": "PAYMENT_PLANS",
+      "notes": "PayPal payments - often payment plans or misc purchases"
+    }
+  },
+  "category_descriptions": {
+    "AUTO_LOAN": "Car loan payments",
+    "SUBSCRIPTIONS": "Software, services, streaming",
+    "CREDIT_CARD_PAYMENT": "Credit card payments/autopay",
+    "SAVINGS": "Investment and savings contributions",
+    "PERSONAL_SERVICES": "Personal trainer, services",
+    "PAYMENT_PLANS": "Installment/payment plan purchases",
+    "FOOD_AND_DRINK": "Groceries, restaurants, food delivery",
+    "TRANSPORTATION": "Gas, Uber, Lyft, parking",
+    "GENERAL_MERCHANDISE": "Amazon, Target, Walmart, retail",
+    "ENTERTAINMENT": "Netflix, Spotify, movies, events",
+    "PERSONAL_CARE": "Gym, salon, fitness",
+    "TRAVEL": "Hotels, flights, Airbnb",
+    "UTILITIES": "Electric, water, internet, phone",
+    "HOUSING": "Rent, mortgage",
+    "TRANSFER": "Internal transfers, unspecified P2P",
+    "UNCATEGORIZED": "Needs review"
+  }
+}

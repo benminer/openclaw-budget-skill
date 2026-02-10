@@ -131,6 +131,17 @@ async function fetchTransactions(days = 30) {
 function categorizeTransaction(description) {
   const desc = description.toLowerCase();
   
+  // Load personal category rules
+  const personalRules = require('./personal-categories.json');
+  
+  // Check personal merchant rules first
+  for (const [merchant, rule] of Object.entries(personalRules.merchant_rules)) {
+    if (desc.includes(merchant.toLowerCase())) {
+      return rule.category;
+    }
+  }
+  
+  // Fallback to generic rules
   if (desc.includes('grocery') || desc.includes('supermarket') || desc.includes('food')) {
     return 'FOOD_AND_DRINK';
   } else if (desc.includes('gas') || desc.includes('fuel') || desc.includes('uber') || desc.includes('lyft')) {
@@ -147,10 +158,6 @@ function categorizeTransaction(description) {
     return 'UTILITIES';
   } else if (desc.includes('rent') || desc.includes('mortgage')) {
     return 'HOUSING';
-  } else if (desc.includes('acorns') || desc.includes('savings')) {
-    return 'SAVINGS';
-  } else if (desc.includes('paypal') || desc.includes('venmo') || desc.includes('transfer')) {
-    return 'TRANSFER';
   }
   
   return 'UNCATEGORIZED';
