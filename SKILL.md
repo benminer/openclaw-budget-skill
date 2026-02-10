@@ -1,64 +1,68 @@
 ---
-name: plaid-budget
-description: Plaid API integration for transaction tracking, spending categorization, budgeting, and financial reports. Supports sandbox testing and production Link flow. Use when user requests: connect bank account, fetch transactions, categorize spending, set/track budgets, review spending, or generate financial reports. Requires Plaid API keys in config.json.
+name: simplefin-budget
+description: SimpleFIN API integration for transaction tracking, spending categorization, budgeting, and financial reports. Personal finance tool for connecting bank accounts, fetching transactions, setting budgets, and generating spending reports. Use when user requests: connect bank account, fetch transactions, categorize spending, set/track budgets, review spending, or generate financial reports. Requires SimpleFIN Access URL in config.json.
 ---
 
-# Plaid Budget Skill
+# SimpleFIN Budget Skill
 
-Connect to bank accounts via Plaid API, fetch transactions, categorize spending, set budgets, and generate spending reports.
+Connect to bank accounts via SimpleFIN Bridge, fetch transactions, categorize spending, set budgets, and generate spending reports.
+
+**SimpleFIN** is a $2/month per-bank service designed for personal finance apps. No business registration required.
 
 ## Quick Start
 
-1. **Setup**: Initialize data directory and install dependencies
+1. **Setup**: Initialize data directory
    ```bash
    node scripts/setup.js
    ```
 
-2. **Configure**: Edit `~/.openclaw/workspace/data/plaid/config.json` with your Plaid keys
+2. **Sign up for SimpleFIN**:
+   - Go to https://beta-bridge.simplefin.org/
+   - Click "Create a SimpleFIN Bridge"
+   - Connect your bank ($2/month per connection)
+   - Copy your **Access URL**
+
+3. **Configure**: Edit `~/.openclaw/workspace/data/simplefin/config.json`
    ```json
    {
-     "client_id": "your_client_id",
-     "sandbox_secret": "your_sandbox_secret"
+     "access_url": "https://bridge.simplefin.org/simplefin/<your_token>"
    }
    ```
 
-3. **Connect Account** (Sandbox):
+4. **Fetch Accounts**:
    ```bash
-   node scripts/auth_sandbox.js --institution_id=ins_56
+   node scripts/fetch_accounts.js
    ```
 
-4. **Fetch Transactions**:
+5. **Fetch Transactions**:
    ```bash
-   node scripts/fetch_transactions.js --access_token=<token> --days=30
+   node scripts/fetch_transactions.js --days=30
    ```
 
-5. **View Report**:
+6. **View Report**:
    ```bash
-   node scripts/report.js --access_token=<token> --period=monthly
+   node scripts/report.js --period=monthly
    ```
 
 ## Core Workflows
 
 ### Bank Account Connection
 
-**Sandbox (Testing)**:
-- Uses test bank credentials (no real bank connection)
-- `node scripts/auth_sandbox.js --institution_id=ins_56`
-- Test institution: Tartan Bank (ins_56) with username `user_good`, password `pass_good`
-
-**Production** (Not yet implemented):
-- Requires Link token generation and user browser flow
-- See `references/plaid_api.md` for details
+SimpleFIN handles all bank connections through their web interface:
+1. Sign up at https://beta-bridge.simplefin.org/
+2. Use their web UI to connect banks
+3. Copy your Access URL to config.json
+4. Run `fetch_accounts.js` to verify
 
 ### Transaction Management
 
 **Fetch transactions**:
 ```bash
-node scripts/fetch_transactions.js --access_token=<token> --days=30
+node scripts/fetch_transactions.js --days=30
 ```
 - Fetches last 30 days (or specify --days=90 for 90 days)
-- Auto-categorizes using Plaid's Personal Finance Categories
-- Saves to `data/plaid/transactions/<token>.json`
+- Auto-categorizes using keyword matching
+- Saves to `data/simplefin/transactions/transactions.json`
 
 ### Budget Tracking
 
@@ -69,7 +73,7 @@ node scripts/set_budget.js --category=FOOD_AND_DRINK --limit=500 --period=monthl
 
 **Check budget status**:
 ```bash
-node scripts/budget_status.js --access_token=<token> --period=monthly
+node scripts/budget_status.js --period=monthly
 ```
 - Shows spending vs budget for current period
 - Highlights categories over budget
@@ -77,7 +81,7 @@ node scripts/budget_status.js --access_token=<token> --period=monthly
 ### Spending Reports
 
 ```bash
-node scripts/report.js --access_token=<token> --period=monthly
+node scripts/report.js --period=monthly
 ```
 - Total spending by category
 - Top 10 merchants
@@ -87,51 +91,51 @@ Periods: `monthly` (current calendar month) or `weekly` (last 7 days)
 
 ## Data Storage
 
-All data stored in: `~/.openclaw/workspace/data/plaid/`
+All data stored in: `~/.openclaw/workspace/data/simplefin/`
 
-- `config.json` - API credentials
-- `access_tokens/<institution>.json` - Saved access tokens per bank
-- `transactions/<token>.json` - Cached transactions (categorized)
+- `config.json` - SimpleFIN Access URL
+- `accounts/accounts.json` - Connected bank accounts
+- `transactions/transactions.json` - Cached transactions (categorized)
 - `budgets.json` - Budget limits by category and period
 
 ## Categories
 
-Plaid Personal Finance Categories (primary):
+Auto-categorization based on merchant/description keywords:
 - FOOD_AND_DRINK
 - TRANSPORTATION
 - GENERAL_MERCHANDISE
 - ENTERTAINMENT
 - PERSONAL_CARE
 - TRAVEL
-- INCOME
-- TRANSFER_IN/TRANSFER_OUT
-- LOAN_PAYMENTS
-- BANK_FEES
+- UTILITIES
+- HOUSING
+- UNCATEGORIZED
 
-Custom category rules can be added to `assets/category_rules.json`
+Custom rules can be added to categorization logic in `fetch_transactions.js`
 
 ## Troubleshooting
 
 **"Config not found"**: Run `node scripts/setup.js` first
 
+**"Please add your SimpleFIN Access URL"**: Edit config.json and paste your URL from SimpleFIN
+
 **"No transactions found"**: Run `fetch_transactions.js` to sync
 
-**"ITEM_LOGIN_REQUIRED"**: Access token expired, need to re-authenticate
+**HTTP errors**: Check that your Access URL is correct and hasn't expired
 
-**API errors**: Check `references/plaid_api.md` for common errors and solutions
+## SimpleFIN Pricing
 
-## References
-
-- **API Documentation**: See `references/plaid_api.md` for endpoint details
-- **Sandbox Testing**: Test credentials and institutions in API docs
-- **Official Docs**: https://plaid.com/docs/
+- $2/month per bank connection (billed annually: $24/year)
+- No business registration required
+- No review process
+- Cancel anytime
 
 ## Scripts
 
-- `setup.js` - Initialize data directories and install dependencies
-- `auth_sandbox.js` - Connect sandbox account
+- `setup.js` - Initialize data directories
+- `fetch_accounts.js` - Fetch connected bank accounts
 - `fetch_transactions.js` - Fetch and categorize transactions
 - `set_budget.js` - Set budget limits
 - `budget_status.js` - Check spending vs budgets
 - `report.js` - Generate spending reports
-- `utils.js` - Shared utilities (Plaid client, file I/O, error handling)
+- `utils.js` - Shared utilities (SimpleFIN HTTP client, file I/O, error handling)

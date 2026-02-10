@@ -1,69 +1,61 @@
-const { loadConfig, initClient, loadJson, saveJson, printJson, handleError, DATA_DIR } = require('./utils');
+const { loadConfig, simplefinRequest, loadJson, saveJson, printJson, handleError, DATA_DIR } = require('./utils');
 const path = require('path');
 
 async function main() {
   try {
     const args = process.argv.slice(2);
-    const accessToken = args.find(arg => arg.startsWith('--access_token='))?.split('=')[1];
     const days = parseInt(args.find(arg => arg.startsWith('--days='))?.split('=')[1] || '30');
     
-    if (!accessToken) {
-      console.error('Usage: node fetch_transactions.js --access_token=<token> [--days=30]');
+    const config = await loadConfig();
+    const accessUrl = config.access_url;
+    
+    if (!accessUrl || accessUrl === 'YOUR_SIMPLEFIN_ACCESS_URL') {
+      console.error('Please add your SimpleFIN Access URL to config.json');
       process.exit(1);
     }
     
-    const config = await loadConfig();
-    const client = initClient(config);
+    const endDate = new Date();
+    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     
-    const endDate = new Date().toISOString().split('T')[0];
-    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const startDateStr = Math.floor(startDate.getTime() / 1000).toString();
+    const endDateStr = Math.floor(endDate.getTime() / 1000).toString();
     
-    console.log(`Fetching transactions from ${startDate} to ${endDate}...`);
+    console.log(`Fetching transactions from ${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}...`);
     
+    // Fetch transactions with date range in URL
+    const urlWithDates = `${accessUrl}?start-date=${startDateStr}&end-date=${endDateStr}`;
+    const response = await simplefinRequest(urlWithDates, '');
+    
+    const accounts = response.accounts || [];
     let allTransactions = [];
-    let hasMore = true;
-    let offset = 0;
-    const count = 500;
     
-    while (hasMore) {
-      const response = await client.transactionsGet({
-        access_token: accessToken,
-        start_date: startDate,
-        end_date: endDate,
-        options: {
-          count,
-          offset,
-        },
-      });
-      
-      const { transactions, total_transactions } = response.data;
-      allTransactions = allTransactions.concat(transactions);
-      
-      offset += transactions.length;
-      hasMore = offset < total_transactions;
-      
-      console.log(`✓ Fetched ${allTransactions.length}/${total_transactions} transactions`);
-    }
+    accounts.forEach(account => {
+      if (account.transactions) {
+        account.transactions.forEach(txn => {
+          allTransactions.push({
+            id: txn.id,
+            date: new Date(txn.posted * 1000).toISOString().split('T')[0],
+            amount: Math.abs(txn.amount / 100), // Convert cents to dollars
+            merchant_name: txn.description,
+            category: categorizeTransaction(txn.description),
+            account_name: account.name,
+            account_org: account.org.name,
+          });
+        });
+      }
+    });
     
-    // Categorize transactions
-    const categorized = allTransactions.map(txn => ({
-      id: txn.transaction_id,
-      date: txn.date,
-      amount: txn.amount,
-      merchant_name: txn.merchant_name || txn.name,
-      category: txn.personal_finance_category?.primary || 'UNCATEGORIZED',
-      detailed_category: txn.personal_finance_category?.detailed || '',
-    }));
+    console.log(`✓ Fetched ${allTransactions.length} transactions from ${accounts.length} accounts`);
     
     // Save transactions
-    const txnPath = path.join(DATA_DIR, 'transactions', `${accessToken.slice(0, 10)}.json`);
-    await saveJson(txnPath, categorized);
+    const txnPath = path.join(DATA_DIR, 'transactions', 'transactions.json');
+    await saveJson(txnPath, allTransactions);
+    console.log(`✓ Saved to: ${txnPath}`);
     
-    console.log(`✓ Saved ${categorized.length} transactions to: ${txnPath}`);
+    // Summary by category
     console.log(`\nSummary by category:`);
-    
     const summary = {};
-    categorized.forEach(txn => {
+    allTransactions.forEach(txn => {
       summary[txn.category] = (summary[txn.category] || 0) + txn.amount;
     });
     
@@ -72,6 +64,31 @@ async function main() {
   } catch (error) {
     handleError(error);
   }
+}
+
+function categorizeTransaction(description) {
+  const desc = description.toLowerCase();
+  
+  // Simple keyword-based categorization
+  if (desc.includes('grocery') || desc.includes('supermarket') || desc.includes('food')) {
+    return 'FOOD_AND_DRINK';
+  } else if (desc.includes('gas') || desc.includes('fuel') || desc.includes('uber') || desc.includes('lyft')) {
+    return 'TRANSPORTATION';
+  } else if (desc.includes('amazon') || desc.includes('target') || desc.includes('walmart')) {
+    return 'GENERAL_MERCHANDISE';
+  } else if (desc.includes('netflix') || desc.includes('spotify') || desc.includes('movie') || desc.includes('theater')) {
+    return 'ENTERTAINMENT';
+  } else if (desc.includes('gym') || desc.includes('fitness') || desc.includes('salon')) {
+    return 'PERSONAL_CARE';
+  } else if (desc.includes('hotel') || desc.includes('airline') || desc.includes('airbnb')) {
+    return 'TRAVEL';
+  } else if (desc.includes('utility') || desc.includes('electric') || desc.includes('water') || desc.includes('internet')) {
+    return 'UTILITIES';
+  } else if (desc.includes('rent') || desc.includes('mortgage')) {
+    return 'HOUSING';
+  }
+  
+  return 'UNCATEGORIZED';
 }
 
 main();

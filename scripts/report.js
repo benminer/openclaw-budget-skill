@@ -4,16 +4,10 @@ const path = require('path');
 async function main() {
   try {
     const args = process.argv.slice(2);
-    const accessToken = args.find(arg => arg.startsWith('--access_token='))?.split('=')[1];
     const period = args.find(arg => arg.startsWith('--period='))?.split('=')[1] || 'monthly';
     
-    if (!accessToken) {
-      console.error('Usage: node report.js --access_token=<token> [--period=monthly|weekly]');
-      process.exit(1);
-    }
-    
     // Load transactions
-    const txnPath = path.join(DATA_DIR, 'transactions', `${accessToken.slice(0, 10)}.json`);
+    const txnPath = path.join(DATA_DIR, 'transactions', 'transactions.json');
     const transactions = await loadJson(txnPath);
     
     if (!transactions) {

@@ -1,11 +1,10 @@
 const { ensureDataDir, DATA_DIR, saveJson } = require('./utils');
 const path = require('path');
 const fs = require('fs').promises;
-const { execSync } = require('child_process');
 
 async function main() {
   try {
-    console.log('Setting up plaid-budget skill...');
+    console.log('Setting up SimpleFIN budget skill...');
     
     // Create data directories
     await ensureDataDir();
@@ -19,7 +18,7 @@ async function main() {
     if (!configExists) {
       const template = require(configTemplatePath);
       await saveJson(configPath, template);
-      console.log(`✓ Created config.json (add your Plaid keys here)`);
+      console.log(`✓ Created config.json (add your SimpleFIN Access URL here)`);
     } else {
       console.log(`✓ config.json already exists`);
     }
@@ -37,20 +36,13 @@ async function main() {
       console.log(`✓ budgets.json already exists`);
     }
     
-    // Install dependencies
-    console.log('Installing dependencies (plaid)...');
-    try {
-      execSync('npm install plaid', { cwd: __dirname, stdio: 'inherit' });
-      console.log('✓ Dependencies installed');
-    } catch (error) {
-      console.error('Failed to install dependencies. Run: npm install plaid');
-    }
-    
     console.log('\n✅ Setup complete!');
     console.log(`\nNext steps:`);
-    console.log(`1. Edit ${configPath} with your Plaid sandbox keys`);
-    console.log(`2. Run: node scripts/auth_sandbox.js --institution_id ins_56`);
-    console.log(`3. Run: node scripts/fetch_transactions.js --days 30`);
+    console.log(`1. Sign up at https://beta-bridge.simplefin.org/`);
+    console.log(`2. Connect your bank and get your Access URL`);
+    console.log(`3. Edit ${configPath} and paste your Access URL`);
+    console.log(`4. Run: node scripts/fetch_accounts.js`);
+    console.log(`5. Run: node scripts/fetch_transactions.js --days 30`);
     
   } catch (error) {
     console.error('Setup failed:', error.message);

@@ -1,12 +1,12 @@
-const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
+const https = require('https');
 const fs = require('fs').promises;
 const path = require('path');
 
-const DATA_DIR = path.join(process.env.HOME, '.openclaw', 'workspace', 'data', 'plaid');
+const DATA_DIR = path.join(process.env.HOME, '.openclaw', 'workspace', 'data', 'simplefin');
 
 async function ensureDataDir() {
   await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.mkdir(path.join(DATA_DIR, 'access_tokens'), { recursive: true });
+  await fs.mkdir(path.join(DATA_DIR, 'accounts'), { recursive: true });
   await fs.mkdir(path.join(DATA_DIR, 'transactions'), { recursive: true });
 }
 
@@ -23,17 +23,44 @@ async function loadConfig() {
   }
 }
 
-function initClient(config) {
-  const configuration = new Configuration({
-    basePath: PlaidEnvironments.sandbox,
-    baseOptions: {
+async function simplefinRequest(accessUrl, endpoint) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(accessUrl);
+    const fullPath = url.pathname + (endpoint || '');
+    
+    const options = {
+      hostname: url.hostname,
+      port: url.port || 443,
+      path: fullPath + (url.search || ''),
+      method: 'GET',
       headers: {
-        'PLAID-CLIENT-ID': config.client_id,
-        'PLAID-SECRET': config.sandbox_secret,
+        'Accept': 'application/json',
       },
-    },
+    };
+    
+    const req = https.request(options, (res) => {
+      let data = '';
+      
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            resolve(data);
+          }
+        } else {
+          reject(new Error(`HTTP ${res.statusCode}: ${data}`));
+        }
+      });
+    });
+    
+    req.on('error', reject);
+    req.end();
   });
-  return new PlaidApi(configuration);
 }
 
 async function loadJson(filePath) {
@@ -59,7 +86,7 @@ function printJson(data) {
 function handleError(error) {
   console.error('Error:', error.message);
   if (error.response) {
-    console.error('Plaid response:', error.response.data);
+    console.error('Response:', error.response);
   }
   process.exit(1);
 }
@@ -68,7 +95,7 @@ module.exports = {
   DATA_DIR,
   ensureDataDir,
   loadConfig,
-  initClient,
+  simplefinRequest,
   loadJson,
   saveJson,
   printJson,

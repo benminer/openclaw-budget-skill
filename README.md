@@ -1,14 +1,16 @@
-# Plaid Budget Skill for OpenClaw
+# SimpleFIN Budget Skill for OpenClaw
 
-OpenClaw skill for connecting bank accounts via Plaid API, tracking transactions, categorizing spending, setting budgets, and generating financial reports.
+OpenClaw skill for connecting bank accounts via SimpleFIN Bridge, tracking transactions, categorizing spending, setting budgets, and generating financial reports.
+
+**Migrated from Plaid** — SimpleFIN is simpler, cheaper ($2/month), and designed for personal projects.
 
 ## Features
 
-- 🏦 **Bank Connection**: Sandbox testing with Plaid's test banks
+- 🏦 **Bank Connection**: Connect real bank accounts via SimpleFIN ($2/month)
 - 📊 **Transaction Tracking**: Auto-fetch and categorize transactions
 - 💰 **Budget Management**: Set limits by category (monthly/weekly)
 - 📈 **Spending Reports**: View spending by category, top merchants, trends
-- 🔐 **Secure**: API keys stored locally, no credentials in code
+- 🔐 **Secure**: Access URL contains auth token, no credentials stored
 
 ## Installation
 
@@ -18,47 +20,49 @@ OpenClaw skill for connecting bank accounts via Plaid API, tracking transactions
    cd scripts
    node setup.js
    ```
-3. Add your Plaid API keys to `~/.openclaw/workspace/data/plaid/config.json`
+3. Sign up for SimpleFIN and add your Access URL to `~/.openclaw/workspace/data/simplefin/config.json`
 
 ## Quick Start
 
 ```bash
-# Connect a sandbox bank account
-node scripts/auth_sandbox.js --institution_id=ins_56
+# Fetch connected accounts
+node scripts/fetch_accounts.js
 
 # Fetch transactions (last 30 days)
-node scripts/fetch_transactions.js --access_token=<your_token> --days=30
+node scripts/fetch_transactions.js --days=30
 
 # Set a monthly budget
 node scripts/set_budget.js --category=FOOD_AND_DRINK --limit=500 --period=monthly
 
 # Check budget status
-node scripts/budget_status.js --access_token=<your_token>
+node scripts/budget_status.js
 
 # Generate spending report
-node scripts/report.js --access_token=<your_token> --period=monthly
+node scripts/report.js --period=monthly
 ```
 
-## Get Plaid API Keys
+## Get SimpleFIN Access
 
-1. Sign up at [plaid.com](https://dashboard.plaid.com/signup)
-2. Create a new app in the dashboard
-3. Get your `client_id` and `sandbox` secret
-4. Add them to your config.json
+1. Sign up at [beta-bridge.simplefin.org](https://beta-bridge.simplefin.org/)
+2. Click **"Create a SimpleFIN Bridge"**
+3. Connect your bank via their web interface
+4. Copy your **Access URL** (looks like `https://bridge.simplefin.org/simplefin/<token>`)
+5. Paste it into your config.json
 
-## Sandbox Testing
+**Pricing**: $2/month per bank connection (billed annually, $24/year). No business registration required.
 
-Use Plaid's test bank: **Tartan Bank** (`ins_56`)
-- Username: `user_good`
-- Password: `pass_good`
+## Why SimpleFIN over Plaid?
 
-This creates fake transactions for testing without connecting real banks.
+- ✅ **Personal-friendly**: No business registration or review process
+- ✅ **Cheaper**: $2/month vs Plaid's $100+/month production plans
+- ✅ **Simpler API**: REST endpoints, no SDK needed
+- ✅ **Privacy-focused**: Data stays between you and SimpleFIN
 
 ## Documentation
 
 See `SKILL.md` for complete workflows and usage details.
 
-See `references/plaid_api.md` for API endpoint documentation.
+See `references/plaid_api.md` for SimpleFIN API documentation.
 
 ## License
 
@@ -67,3 +71,7 @@ MIT
 ## Contributing
 
 Pull requests welcome! This is an open-source OpenClaw skill.
+
+---
+
+**Note**: Skill was originally built for Plaid but migrated to SimpleFIN for ease of use in personal projects.

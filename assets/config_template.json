@@ -1,6 +1,3 @@
 {
-  "client_id": "YOUR_PLAID_CLIENT_ID",
-  "sandbox_secret": "YOUR_SANDBOX_SECRET",
-  "development_secret": "YOUR_DEVELOPMENT_SECRET",
-  "production_secret": "YOUR_PRODUCTION_SECRET"
+  "access_url": "YOUR_SIMPLEFIN_ACCESS_URL"
 }
