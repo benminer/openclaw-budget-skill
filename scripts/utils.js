@@ -28,6 +28,11 @@ async function simplefinRequest(accessUrl, endpoint) {
     const url = new URL(accessUrl);
     const fullPath = url.pathname + (endpoint || '');
     
+    // Extract Basic Auth credentials from URL
+    const auth = url.username && url.password 
+      ? Buffer.from(`${url.username}:${url.password}`).toString('base64')
+      : null;
+    
     const options = {
       hostname: url.hostname,
       port: url.port || 443,
@@ -37,6 +42,10 @@ async function simplefinRequest(accessUrl, endpoint) {
         'Accept': 'application/json',
       },
     };
+    
+    if (auth) {
+      options.headers['Authorization'] = `Basic ${auth}`;
+    }
     
     const req = https.request(options, (res) => {
       let data = '';

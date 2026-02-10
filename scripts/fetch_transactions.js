@@ -22,9 +22,12 @@ async function main() {
     
     console.log(`Fetching transactions from ${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}...`);
     
-    // Fetch transactions with date range in URL
-    const urlWithDates = `${accessUrl}?start-date=${startDateStr}&end-date=${endDateStr}`;
-    const response = await simplefinRequest(urlWithDates, '');
+    // SimpleFIN returns transactions within accounts, just add date params
+    const url = new URL(accessUrl);
+    url.searchParams.set('start-date', startDateStr);
+    url.searchParams.set('end-date', endDateStr);
+    
+    const response = await simplefinRequest(url.toString(), '');
     
     const accounts = response.accounts || [];
     let allTransactions = [];
