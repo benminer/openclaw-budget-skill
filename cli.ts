@@ -1,12 +1,23 @@
 #!/usr/bin/env bun
 
-const yargs = require('yargs');
-const hideBin = (argv) => argv.slice(2);
-const { ensureDataDir, loadConfig, loadJson, saveJson, simplefinRequest, printJson, handleError, DATA_DIR } = require('./scripts/utils');
-const path = require('path');
+import yargs from 'yargs';
+import path from 'path';
+import { ensureDataDir, loadConfig, loadJson, saveJson, simplefinRequest, printJson, handleError, DATA_DIR } from './scripts/utils';
+
+const hideBin = (argv: string[]) => argv.slice(2);
+
+interface Transaction {
+  id: string;
+  date: string;
+  amount: number;
+  merchant_name: string;
+  category: string;
+  account_name: string;
+  account_org: string;
+}
 
 // Setup command
-async function setup() {
+async function setup(): Promise<void> {
   try {
     console.log('Setting up SimpleFIN budget skill...');
     
@@ -49,7 +60,7 @@ async function setup() {
 }
 
 // Fetch accounts
-async function fetchAccounts() {
+async function fetchAccounts(): Promise<void> {
   try {
     console.log('Fetching accounts from SimpleFIN...');
     
@@ -72,7 +83,7 @@ async function fetchAccounts() {
     
     console.log('\nAccounts:');
     accounts.forEach(acc => {
-      const balance = parseFloat(acc.balance) / 100;
+      const balance = parseFloat(acc.balance);
       console.log(`  - ${acc.name} (${acc.org.name}): $${balance.toFixed(2)}`);
     });
     
@@ -82,7 +93,7 @@ async function fetchAccounts() {
 }
 
 // Fetch transactions
-async function fetchTransactions(days = 30) {
+async function fetchTransactions(days: number = 30): Promise<void> {
   try {
     const accountsPath = path.join(DATA_DIR, 'accounts', 'accounts.json');
     const accounts = await loadJson(accountsPath);
@@ -128,11 +139,26 @@ async function fetchTransactions(days = 30) {
   }
 }
 
-function categorizeTransaction(description) {
+interface PersonalCategoryRule {
+  category: string;
+  notes: string;
+  frequency?: string;
+  track_balance?: boolean;
+  current_balance?: number;
+  last_updated?: string;
+  merchant_name?: string;
+}
+
+interface PersonalCategories {
+  merchant_rules: Record<string, PersonalCategoryRule>;
+  category_descriptions: Record<string, string>;
+}
+
+function categorizeTransaction(description: string): string {
   const desc = description.toLowerCase();
   
   // Load personal category rules
-  const personalRules = require('./personal-categories.json');
+  const personalRules: PersonalCategories = require('./personal-categories.json');
   
   // Check personal merchant rules first
   for (const [merchant, rule] of Object.entries(personalRules.merchant_rules)) {
@@ -164,7 +190,7 @@ function categorizeTransaction(description) {
 }
 
 // Set budget
-async function setBudget(category, limit, period = 'monthly') {
+async function setBudget(category: string, limit: number, period: string = 'monthly'): Promise<void> {
   try {
     const budgetPath = path.join(DATA_DIR, 'budgets.json');
     let budgets = await loadJson(budgetPath) || {};
@@ -186,7 +212,7 @@ async function setBudget(category, limit, period = 'monthly') {
 }
 
 // Budget status
-async function budgetStatus(period = 'monthly') {
+async function budgetStatus(period: string = 'monthly'): Promise<void> {
   try {
     const budgetPath = path.join(DATA_DIR, 'budgets.json');
     const budgets = await loadJson(budgetPath);
@@ -235,7 +261,7 @@ async function budgetStatus(period = 'monthly') {
 }
 
 // Generate report
-async function report(period = 'monthly') {
+async function report(period: string = 'monthly'): Promise<void> {
   try {
     const txnPath = path.join(DATA_DIR, 'transactions', 'transactions.json');
     const transactions = await loadJson(txnPath);

@@ -1,21 +1,53 @@
-const https = require('https');
-const fs = require('fs').promises;
-const path = require('path');
+import https from 'https';
+import fs from 'fs/promises';
+import path from 'path';
 
-const DATA_DIR = path.join(process.env.HOME, '.openclaw', 'workspace', 'data', 'simplefin');
+export const DATA_DIR = path.join(process.env.HOME!, '.openclaw', 'workspace', 'data', 'simplefin');
 
-async function ensureDataDir() {
+interface SimpleFINConfig {
+  access_url: string;
+}
+
+interface SimpleFINAccount {
+  id: string;
+  name: string;
+  currency: string;
+  balance: string;
+  'available-balance': string;
+  'balance-date': number;
+  transactions: SimpleFINTransaction[];
+  holdings: any[];
+  org: {
+    domain: string;
+    name: string;
+    'sfin-url': string;
+    url: string;
+    id: string;
+  };
+}
+
+interface SimpleFINTransaction {
+  id: string;
+  posted: number;
+  amount: string;
+  description: string;
+  payee?: string;
+  memo?: string;
+  transacted_at: number;
+}
+
+export async function ensureDataDir(): Promise<void> {
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.mkdir(path.join(DATA_DIR, 'accounts'), { recursive: true });
   await fs.mkdir(path.join(DATA_DIR, 'transactions'), { recursive: true });
 }
 
-async function loadConfig() {
+export async function loadConfig(): Promise<SimpleFINConfig> {
   const configPath = path.join(DATA_DIR, 'config.json');
   try {
     const data = await fs.readFile(configPath, 'utf8');
     return JSON.parse(data);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       throw new Error(`Config not found. Run setup.js first.`);
     }
@@ -23,7 +55,7 @@ async function loadConfig() {
   }
 }
 
-async function simplefinRequest(accessUrl, endpoint) {
+export async function simplefinRequest(accessUrl: string, endpoint: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const url = new URL(accessUrl);
     const fullPath = url.pathname + (endpoint || '');
@@ -33,7 +65,7 @@ async function simplefinRequest(accessUrl, endpoint) {
       ? Buffer.from(`${url.username}:${url.password}`).toString('base64')
       : null;
     
-    const options = {
+    const options: https.RequestOptions = {
       hostname: url.hostname,
       port: url.port || 443,
       path: fullPath + (url.search || ''),
@@ -44,7 +76,7 @@ async function simplefinRequest(accessUrl, endpoint) {
     };
     
     if (auth) {
-      options.headers['Authorization'] = `Basic ${auth}`;
+      options.headers!['Authorization'] = `Basic ${auth}`;
     }
     
     const req = https.request(options, (res) => {
@@ -55,7 +87,7 @@ async function simplefinRequest(accessUrl, endpoint) {
       });
       
       res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
+        if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
           try {
             resolve(JSON.parse(data));
           } catch (e) {
@@ -72,11 +104,11 @@ async function simplefinRequest(accessUrl, endpoint) {
   });
 }
 
-async function loadJson(filePath) {
+export async function loadJson<T = any>(filePath: string): Promise<T | null> {
   try {
     const data = await fs.readFile(filePath, 'utf8');
     return JSON.parse(data);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       return null;
     }
@@ -84,29 +116,18 @@ async function loadJson(filePath) {
   }
 }
 
-async function saveJson(filePath, data) {
+export async function saveJson(filePath: string, data: any): Promise<void> {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
 }
 
-function printJson(data) {
+export function printJson(data: any): void {
   console.log(JSON.stringify(data, null, 2));
 }
 
-function handleError(error) {
+export function handleError(error: any): void {
   console.error('Error:', error.message);
   if (error.response) {
     console.error('Response:', error.response);
   }
   process.exit(1);
 }
-
-module.exports = {
-  DATA_DIR,
-  ensureDataDir,
-  loadConfig,
-  simplefinRequest,
-  loadJson,
-  saveJson,
-  printJson,
-  handleError,
-};
