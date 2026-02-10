@@ -1,6 +1,6 @@
 ---
 name: budget-skill
-description: SimpleFIN API integration for transaction tracking, spending categorization, budgeting, and financial reports. Personal finance tool for connecting bank accounts, fetching transactions, setting budgets, and generating spending reports. Use when user requests: connect bank account, fetch transactions, categorize spending, set/track budgets, review spending, or generate financial reports. Requires SimpleFIN Access URL in config.json.
+description: SimpleFIN API integration for transaction tracking, spending categorization, budgeting, and financial reports. Personal finance tool for connecting bank accounts, fetching transactions, setting budgets, and generating spending reports. Use when user requests: connect bank account, fetch transactions, categorize spending, set/track budgets, review spending, or generate financial reports. Requires SimpleFIN Access URL in config.json. ALWAYS read financial-context.md before generating reports for personalized context (loan balances, recurring payments, merchant names).
 ---
 
 # Budget Skill
@@ -100,7 +100,15 @@ All data stored in: `~/.openclaw/workspace/data/simplefin/`
 
 ## Categories
 
-Auto-categorization based on merchant/description keywords:
+**Personalized categorization** via `personal-categories.json`:
+- AUTO_LOAN - Car loan payments (tracks balance)
+- SUBSCRIPTIONS - Software/services (OpenCode Zed, etc.)
+- CREDIT_CARD_PAYMENT - Credit card autopay
+- SAVINGS - Investment contributions (Acorns)
+- PERSONAL_SERVICES - Personal trainer, services
+- PAYMENT_PLANS - Installment payments (PayPal)
+
+**Generic categories** (fallback):
 - FOOD_AND_DRINK
 - TRANSPORTATION
 - GENERAL_MERCHANDISE
@@ -109,9 +117,12 @@ Auto-categorization based on merchant/description keywords:
 - TRAVEL
 - UTILITIES
 - HOUSING
+- TRANSFER
 - UNCATEGORIZED
 
-Custom rules can be added to categorization logic in `fetch_transactions.js`
+Edit `personal-categories.json` to customize merchant rules and tracked balances.
+
+**For sub-agents**: Always read `financial-context.md` before generating reports for full context on recurring payments, loan balances, and merchant details.
 
 ## Troubleshooting
 
