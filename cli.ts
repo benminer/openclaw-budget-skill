@@ -157,13 +157,20 @@ interface PersonalCategories {
 function categorizeTransaction(description: string): string {
   const desc = description.toLowerCase();
   
-  // Load personal category rules
-  const personalRules: PersonalCategories = require('./personal-categories.json');
+  // Load personal category rules (optional)
+  let personalRules: PersonalCategories | null = null;
+  try {
+    personalRules = require('./personal-categories.json');
+  } catch {
+    // No personal rules file, use generic categorization only
+  }
   
-  // Check personal merchant rules first
-  for (const [merchant, rule] of Object.entries(personalRules.merchant_rules)) {
-    if (desc.includes(merchant.toLowerCase())) {
-      return rule.category;
+  // Check personal merchant rules first (if available)
+  if (personalRules) {
+    for (const [merchant, rule] of Object.entries(personalRules.merchant_rules)) {
+      if (desc.includes(merchant.toLowerCase())) {
+        return rule.category;
+      }
     }
   }
   

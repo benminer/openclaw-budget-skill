@@ -1,37 +1,15 @@
 {
   "merchant_rules": {
-    "USAA FSB": {
-      "category": "AUTO_LOAN",
-      "notes": "Monthly car loan payment - $501.68",
+    "Example Merchant Name": {
+      "category": "CATEGORY_NAME",
+      "notes": "Description of what this is",
       "frequency": "monthly",
-      "track_balance": true,
-      "current_balance": 3348.73,
-      "last_updated": "2026-02-10"
+      "track_balance": false
     },
-    "ANOMALY": {
+    "Another Merchant": {
       "category": "SUBSCRIPTIONS",
-      "notes": "OpenCode Zed - AI model service",
-      "merchant_name": "OpenCode Zed"
-    },
-    "CAPITAL ONE AUTOPAY": {
-      "category": "CREDIT_CARD_PAYMENT",
-      "notes": "Credit card autopay"
-    },
-    "CAPITAL ONE": {
-      "category": "CREDIT_CARD_PAYMENT",
-      "notes": "Credit card payment"
-    },
-    "Acorns": {
-      "category": "SAVINGS",
-      "notes": "Investment/savings contributions"
-    },
-    "Venmo": {
-      "category": "PERSONAL_SERVICES",
-      "notes": "P2P payments - often personal trainer (every 2 weeks, $75)"
-    },
-    "PAYPAL": {
-      "category": "PAYMENT_PLANS",
-      "notes": "PayPal payments - often payment plans or misc purchases"
+      "notes": "Monthly subscription service",
+      "merchant_name": "Service Name"
     }
   },
   "category_descriptions": {

@@ -5,3 +5,5 @@ data/
 .env
 budget-skill
 bun.lockb
+personal-categories.json
+financial-context.md

@@ -124,7 +124,30 @@ Transactions are automatically categorized:
 - **UTILITIES** - Electric, water, internet
 - **TRANSFER** - Internal transfers, P2P payments
 
-You can customize categories by editing `personal-categories.json` in the skill directory.
+### Personalizing Merchant Categories
+
+The skill works out of the box with generic categorization, but you can teach it your specific merchants for more accurate tracking.
+
+**Create your personal rules file:**
+
+1. Copy the example file:
+   ```bash
+   cp personal-categories.example.json personal-categories.json
+   ```
+
+2. Ask your OpenClaw agent to generate personalized rules:
+   ```
+   Review my recent transactions and create a personal-categories.json file 
+   that categorizes my recurring merchants (car loans, subscriptions, etc.)
+   ```
+
+Your agent will:
+- Analyze your transaction history
+- Identify recurring merchants
+- Create custom categorization rules
+- Track important balances (like loan payoffs)
+
+The `personal-categories.json` file stays on your machine and isn't shared in the repository.
 
 ## Privacy & Security
 
