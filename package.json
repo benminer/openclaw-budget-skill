@@ -1,5 +1,5 @@
 {
-  "name": "simplefin-budget-skill",
+  "name": "budget-skill",
   "version": "2.0.0",
   "description": "OpenClaw skill for SimpleFIN API integration - transaction tracking, budgeting, and spending reports",
   "main": "scripts/utils.js",

@@ -1,9 +1,9 @@
 ---
-name: simplefin-budget
+name: budget-skill
 description: SimpleFIN API integration for transaction tracking, spending categorization, budgeting, and financial reports. Personal finance tool for connecting bank accounts, fetching transactions, setting budgets, and generating spending reports. Use when user requests: connect bank account, fetch transactions, categorize spending, set/track budgets, review spending, or generate financial reports. Requires SimpleFIN Access URL in config.json.
 ---
 
-# SimpleFIN Budget Skill
+# Budget Skill
 
 Connect to bank accounts via SimpleFIN Bridge, fetch transactions, categorize spending, set budgets, and generate spending reports.
 

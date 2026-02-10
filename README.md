@@ -1,4 +1,4 @@
-# SimpleFIN Budget Skill for OpenClaw
+# Budget Skill for OpenClaw
 
 OpenClaw skill for connecting bank accounts via SimpleFIN Bridge, tracking transactions, categorizing spending, setting budgets, and generating financial reports.
 
