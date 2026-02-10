@@ -1,80 +1,157 @@
 # Budget Skill for OpenClaw
 
-OpenClaw skill for connecting bank accounts via SimpleFIN Bridge, tracking transactions, categorizing spending, setting budgets, and generating financial reports.
+Personal finance tool that connects to your bank accounts, tracks spending, sets budgets, and sends you weekly/daily spending reports.
 
-**Migrated from Plaid** — SimpleFIN is simpler, cheaper ($2/month), and designed for personal projects.
+## What It Does
 
-## Features
+- **Connect Your Banks** - Securely link checking, savings, and credit cards
+- **Automatic Transaction Tracking** - Pulls transactions daily and categorizes them
+- **Budget Management** - Set spending limits by category (food, entertainment, etc.)
+- **Spending Reports** - Get weekly summaries and daily transaction reviews
+- **Smart Categorization** - Learns your spending patterns and merchants
 
-- 🏦 **Bank Connection**: Connect real bank accounts via SimpleFIN ($2/month)
-- 📊 **Transaction Tracking**: Auto-fetch and categorize transactions
-- 💰 **Budget Management**: Set limits by category (monthly/weekly)
-- 📈 **Spending Reports**: View spending by category, top merchants, trends
-- 🔐 **Secure**: Access URL contains auth token, no credentials stored
+## Setup
 
-## Installation
+### 1. Sign Up for SimpleFIN
 
-1. Install the skill in OpenClaw
-2. Run setup:
-   ```bash
-   cd scripts
-   node setup.js
-   ```
-3. Sign up for SimpleFIN and add your Access URL to `~/.openclaw/workspace/data/simplefin/config.json`
+SimpleFIN is a secure banking connection service ($2/month per bank account).
 
-## Quick Start
+1. Go to [SimpleFIN Bridge](https://beta-bridge.simplefin.org/)
+2. Click **"Create a SimpleFIN Bridge"**
+3. Enter your email
+4. You'll receive a **Setup Token** (a long string)
 
+### 2. Connect Your Bank
+
+1. Visit the setup URL from your email
+2. Search for your bank (Chase, Capital One, etc.)
+3. Enter your online banking credentials
+4. SimpleFIN will give you an **Access URL** — save this, you'll need it next
+
+**Cost:** $2/month per bank connection (billed annually: $24/year)
+
+### 3. Install the Budget Skill
+
+In your OpenClaw chat:
+
+```
+Add the budget skill to your workspace
+```
+
+Or manually download from: [github.com/benminer/openclaw-budget-skill](https://github.com/benminer/openclaw-budget-skill)
+
+### 4. Configure Access
+
+Run the setup:
 ```bash
-# Setup
 budget-skill setup
+```
 
-# Fetch connected accounts
+This creates a config file at `~/.openclaw/workspace/data/simplefin/config.json`
+
+Edit it and paste your **Access URL** from SimpleFIN:
+```json
+{
+  "access_url": "https://YOUR_ACCESS_URL_HERE"
+}
+```
+
+### 5. Test the Connection
+
+Fetch your accounts:
+```bash
 budget-skill accounts
+```
 
-# Fetch transactions (last 30 days)
+You should see all connected bank accounts with balances.
+
+Fetch transactions:
+```bash
 budget-skill fetch --days 30
+```
 
-# Set a monthly budget
-budget-skill budget set --category FOOD_AND_DRINK --limit 500 --period monthly
+Generate a spending report:
+```bash
+budget-skill report --period weekly
+```
 
-# Check budget status
-budget-skill budget status
+## Daily Use
 
-# Generate spending report
+### View Your Balances
+```bash
+budget-skill accounts
+```
+
+### Check Recent Spending
+```bash
+budget-skill report --period weekly
+```
+
+Or for the current month:
+```bash
 budget-skill report --period monthly
 ```
 
-## Get SimpleFIN Access
+### Set a Budget
+```bash
+budget-skill budget set --category FOOD_AND_DRINK --limit 500 --period monthly
+```
 
-1. Sign up at [beta-bridge.simplefin.org](https://beta-bridge.simplefin.org/)
-2. Click **"Create a SimpleFIN Bridge"**
-3. Connect your bank via their web interface
-4. Copy your **Access URL** (looks like `https://bridge.simplefin.org/simplefin/<token>`)
-5. Paste it into your config.json
+### Check Budget Status
+```bash
+budget-skill budget status
+```
 
-**Pricing**: $2/month per bank connection (billed annually, $24/year). No business registration required.
+## Automated Reports
 
-## Why SimpleFIN over Plaid?
+The skill can send you:
+- **Daily transaction reviews** (every evening at 10 PM)
+- **Weekly spending summaries** (Sunday at 7 PM)
 
-- ✅ **Personal-friendly**: No business registration or review process
-- ✅ **Cheaper**: $2/month vs Plaid's $100+/month production plans
-- ✅ **Simpler API**: REST endpoints, no SDK needed
-- ✅ **Privacy-focused**: Data stays between you and SimpleFIN
+Ask your OpenClaw assistant to set these up via cron jobs.
 
-## Documentation
+## Spending Categories
 
-See `SKILL.md` for complete workflows and usage details.
+Transactions are automatically categorized:
+- **FOOD_AND_DRINK** - Groceries, restaurants, delivery
+- **TRANSPORTATION** - Gas, Uber, public transit
+- **ENTERTAINMENT** - Streaming, movies, events
+- **SUBSCRIPTIONS** - Software, services
+- **PERSONAL_SERVICES** - Gym, trainer, salon
+- **AUTO_LOAN** - Car payments
+- **SAVINGS** - Investment contributions
+- **HOUSING** - Rent, mortgage
+- **UTILITIES** - Electric, water, internet
+- **TRANSFER** - Internal transfers, P2P payments
 
-See `references/plaid_api.md` for SimpleFIN API documentation.
+You can customize categories by editing `personal-categories.json` in the skill directory.
+
+## Privacy & Security
+
+- All data stays on your computer (no cloud storage)
+- SimpleFIN uses bank-level encryption
+- Your Access URL acts as your password — keep it secure
+- Data is stored locally in `~/.openclaw/workspace/data/simplefin/`
+
+## Troubleshooting
+
+**"Config not found"**  
+→ Run `budget-skill setup` first
+
+**"No transactions found"**  
+→ Run `budget-skill fetch --days 30` to sync
+
+**"Empty transactions for a bank"**  
+→ Some banks take 24 hours to sync after first connection. Try again tomorrow.
+
+**Need to reconnect a bank?**  
+→ Go to [SimpleFIN Bridge](https://beta-bridge.simplefin.org/), re-authenticate, and the Access URL stays the same
+
+## Support
+
+- **SimpleFIN Help**: [SimpleFIN Support](https://beta-bridge.simplefin.org/contact)
+- **Skill Issues**: [GitHub Issues](https://github.com/benminer/openclaw-budget-skill/issues)
 
 ## License
 
-MIT
-
-## Contributing
-
-Pull requests welcome! This is an open-source OpenClaw skill.
-
----
-
-**Note**: Skill was originally built for Plaid but migrated to SimpleFIN for ease of use in personal projects.
+MIT - Free to use and modify
