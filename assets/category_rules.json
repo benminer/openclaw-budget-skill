@@ -1,0 +1,9 @@
+{
+  "merchant_overrides": {
+    "Starbucks": "FOOD_AND_DRINK",
+    "Uber": "TRANSPORTATION",
+    "Amazon": "GENERAL_MERCHANDISE",
+    "Netflix": "ENTERTAINMENT",
+    "Spotify": "ENTERTAINMENT"
+  }
+}

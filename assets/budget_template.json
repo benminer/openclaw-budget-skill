@@ -1,0 +1,16 @@
+{
+  "monthly": {
+    "FOOD_AND_DRINK": 500,
+    "TRANSPORTATION": 200,
+    "GENERAL_MERCHANDISE": 300,
+    "ENTERTAINMENT": 150,
+    "PERSONAL_CARE": 100,
+    "TRAVEL": 500
+  },
+  "weekly": {
+    "FOOD_AND_DRINK": 125,
+    "TRANSPORTATION": 50,
+    "GENERAL_MERCHANDISE": 75,
+    "ENTERTAINMENT": 40
+  }
+}

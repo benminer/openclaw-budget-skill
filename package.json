@@ -1,0 +1,20 @@
+{
+  "name": "plaid-budget-skill",
+  "version": "1.0.0",
+  "description": "OpenClaw skill for Plaid API integration - transaction tracking, budgeting, and spending reports",
+  "main": "scripts/utils.js",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "auth": "node scripts/auth_sandbox.js",
+    "fetch": "node scripts/fetch_transactions.js",
+    "budget": "node scripts/set_budget.js",
+    "status": "node scripts/budget_status.js",
+    "report": "node scripts/report.js"
+  },
+  "keywords": ["plaid", "banking", "budget", "transactions", "openclaw"],
+  "author": "Ben Miner",
+  "license": "MIT",
+  "dependencies": {
+    "plaid": "^20.0.0"
+  }
+}
